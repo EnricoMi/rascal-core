@@ -28,6 +28,11 @@ jobs:
             unzip -d "$name" "$name.zip"
           done
 
+      - name: Extract Test Results
+        run: |
+          cd artifacts/Test Results/
+          tar -xzvf archive.tar.gz
+
       - name: Publish Test Report
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         with:

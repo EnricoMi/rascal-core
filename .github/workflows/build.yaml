@@ -34,16 +34,10 @@ jobs:
       - name: Compile, Generate and Test (never fails)
         run: mvn -B -Dmaven.test.failure.ignore -Drascal.test.memory=4  test
 
-      - name: Rename colon in file names
+      - name: Archive Test Results
+        # this is needed as some of the files contain characters not supported by the upload action
         run: |
-          find target/surefire-reports -name '*.xml' | while read file
-          do
-            if [[ "$file" == *:* ]]
-            then
-              # replace the colon with a unicode character that looks similar
-              mv -v "$file" "${file//:/꞉}"
-            fi
-          done
+          find target/surefire-reports -name '*.xml' | tar -czvf archive.tar.gz --files-from -
 
       - name: Upload Test Results
         if: always()
@@ -51,7 +45,7 @@ jobs:
         with:
           name: Test Results
           path: |
-            target/surefire-reports/**/*.xml
+            archive.tar.gz
 
       - name: Attach artifact
         id: build-artifact
